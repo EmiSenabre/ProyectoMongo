@@ -1,6 +1,8 @@
 public class Usuario {
-    String name, password, conpassword;
-    int id;
+    private String name;
+    private String password;
+    private String conpassword;
+    private String id;
 
     public String getName() {
         return name;
@@ -26,11 +28,12 @@ public class Usuario {
         this.conpassword = conpassword;
     }
 
-    public int getId() {
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }
