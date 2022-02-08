@@ -21,4 +21,27 @@ public class Control {
         }
         return respuesta;
     }
+
+    public String ctrlLogin(String name, String password){
+        Model model = new Model();
+        String respuesta = "";
+        Usuario datosUsuario;
+
+        if(name.isEmpty() || password.isEmpty()){
+            respuesta="Debe llenar todos los campos";
+        }
+        else{
+            datosUsuario = model.porUsuario(name);
+
+            if(datosUsuario == null){
+                respuesta = "El usuario no existe";
+            }
+            else{
+                if(!Objects.equals(datosUsuario.getPassword(), password)){
+                    respuesta = "El usuario y/o contraseña no coinciden";
+                }
+            }
+        }
+        return respuesta;
+    }
 }

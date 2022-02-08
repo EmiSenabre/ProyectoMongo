@@ -30,7 +30,7 @@ public class Model {
         }
     }
 
-    /*public Usuario porUsuario(String usuario){
+    public Usuario porUsuario(String usuario){
         try(MongoClient mongoClient = MongoClients.create("mongodb://localhost/biblio")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
             MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
@@ -40,10 +40,15 @@ public class Model {
 
             Usuario usr = null;
             while(cursor.hasNext()){
+                Document actual = cursor.next();
                 usr = new Usuario();
+                usr.setId(actual.getString("_id"));
+                usr.setName(actual.getString("name"));
+                usr.setPassword(actual.getString("password"));
             }
+            return usr;
 
         }
-    }*/
+    }
 
 }
