@@ -3,10 +3,11 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.gte;
+import static com.mongodb.client.model.Filters.eq;
 
 public class Model {
     public void registro(Usuario usuario){
-        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost/biblio")){
+        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
             MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
 
@@ -19,19 +20,18 @@ public class Model {
     }
 
     public boolean existeUsuario(String usuario){
-        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost/biblio")){
+        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
             MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
 
-            FindIterable<Document> iterable = booksCollection.find(gte("name",usuario));
-            MongoCursor<Document> cursor = iterable.iterator();
-            return cursor.hasNext();
+            Document document = booksCollection.find(eq("name",usuario)).first();
+            return document != null;
 
         }
     }
 
     public Usuario porUsuario(String usuario){
-        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost/biblio")){
+        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
             MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
 
@@ -42,7 +42,6 @@ public class Model {
             while(cursor.hasNext()){
                 Document actual = cursor.next();
                 usr = new Usuario();
-                usr.setId(actual.getString("_id"));
                 usr.setName(actual.getString("name"));
                 usr.setPassword(actual.getString("password"));
             }
