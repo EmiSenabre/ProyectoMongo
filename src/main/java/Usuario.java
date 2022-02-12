@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Vector;
+
 public class Usuario {
     private String name;
     private String password;
@@ -36,4 +39,5 @@ public class Usuario {
     public void setId(String id) {
         this.id = id;
     }
+
 }

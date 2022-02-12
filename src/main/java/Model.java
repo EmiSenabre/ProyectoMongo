@@ -9,22 +9,22 @@ public class Model {
     public void registro(Usuario usuario){
         try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
-            MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
+            MongoCollection<Document> usuarioCollection = sampleTrainingDB.getCollection("usuarios");
 
             Document book = new Document("_id", new ObjectId());
             book.append("name", usuario.getName())
                     .append("password", usuario.getPassword());
 
-            booksCollection.insertOne(book);
+            usuarioCollection.insertOne(book);
         }
     }
 
     public boolean existeUsuario(String usuario){
         try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
-            MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
+            MongoCollection<Document> usuarioCollection = sampleTrainingDB.getCollection("usuarios");
 
-            Document document = booksCollection.find(eq("name",usuario)).first();
+            Document document = usuarioCollection.find(eq("name",usuario)).first();
             return document != null;
 
         }
@@ -33,11 +33,10 @@ public class Model {
     public Usuario porUsuario(String usuario){
         try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
-            MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("usuarios");
+            MongoCollection<Document> usuarioCollection = sampleTrainingDB.getCollection("usuarios");
 
-            FindIterable<Document> iterable = booksCollection.find(gte("name",usuario));
+            FindIterable<Document> iterable = usuarioCollection.find(gte("name",usuario));
             MongoCursor<Document> cursor = iterable.iterator();
-
             Usuario usr = null;
             while(cursor.hasNext()){
                 Document actual = cursor.next();
@@ -49,5 +48,7 @@ public class Model {
 
         }
     }
+
+
 
 }
