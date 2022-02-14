@@ -5,6 +5,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -20,22 +22,16 @@ public class View {
             System.out.println("ELIJA UNA OPCIÓN");
             System.out.println("1. Registrarse");
             System.out.println("2. Logearse");
-            System.out.println("3. Añadir libros a la base de datos");
-            System.out.println("4. Modificar libros de la base de datos");
-            System.out.println("5. Eliminar libros de la base de datos");
-            System.out.println("6. Salir");
+            System.out.println("3. Salir");
             n = ent.nextInt();
 
             switch (n){
                 case 1->registrarUsuario();
                 case 2->logearUsuario();
-                case 3->crearLibros();
-                case 4->modificarLibros();
-                case 5->borrarLibros();
-                case 6-> System.out.println("Cerrando");
+                case 3-> System.out.println("Cerrando");
                 default-> System.out.println("Opcion no valida");
             }
-        }while (n != 6);
+        }while (n != 3);
 
     }
 
@@ -77,68 +73,90 @@ public class View {
                 System.out.println(respuesta);
             }else{
                 System.out.println("Usuario logeado con exito");
-                logeoExitoso(name);
+                logeoExitoso();
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public static void logeoExitoso(String name){
+    public static void logeoExitoso(){
         int n;
         do{
             System.out.println("ELIJA UNA OPCIÓN");
-            System.out.println("1. Ver mis Libros");
-            System.out.println("2. Añadir Libros");
-            System.out.println("3. Eliminar Libros");
-            System.out.println("4. Cerrar sesión");
+            System.out.println("1. Ver Libros");
+            System.out.println("2. Buscar Libros");
+            System.out.println("3. Añadir Libros");
+            System.out.println("4. Modificar Libros");
+            System.out.println("5. Eliminar Libros");
+            System.out.println("6. Cerrar sesión");
             n = ent.nextInt();
 
             switch (n){
-                case 1->verLibros(name);
-                case 2->añadirLibros(name);
-                case 3->quitarLibros(name);
-                case 4-> System.out.println("Cerrando sesión");
+                case 1->verLibros();
+                case 2->buscarLibros();
+                case 3->crearLibros();
+                case 4->modificarLibros();
+                case 5->borrarLibros();
+                case 6-> System.out.println("Cerrando sesión");
                 default-> System.out.println("Opcion no valida");
             }
-        }while (n != 4);
+        }while (n != 6);
     }
 
-    public static void verLibros(String name){
-
-    }
-
-    public static void añadirLibros(String name){
-        System.out.println("Elige libro a añadir");
-        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")){
+    public static void buscarLibros(){
+        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")) {
             MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
-            MongoCollection<Document> usuarioCollection = sampleTrainingDB.getCollection("usuario");
             MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("libro");
 
             FindIterable<Document> iterable = booksCollection.find();
             MongoCursor<Document> cursor = iterable.iterator();
+            List<String> libros = new ArrayList<String>();
+
 
             Libro lbr = null;
-            while(cursor.hasNext()){
+            while (cursor.hasNext()) {
+                Document actual = cursor.next();
+                lbr = new Libro();
+                lbr.setName(actual.getString("name"));
+                libros.add(lbr.getName());
+            }
+            System.out.println("Busqueda: ");
+            ent.nextLine();
+            String busqueda = ent.nextLine();
+            for (String n:libros){
+                if(n.equals(busqueda)){
+                    Document resultado = booksCollection.find(eq("name",busqueda)).first();
+                    Libro lb = new Libro();
+                    lb.setName(resultado.getString("name"));
+                    lb.setAutor(resultado.getString("autor"));
+                    lb.setPaginas(resultado.getInteger("paginas"));
+                    lb.setId(resultado.getInteger("id"));
+                    System.out.println(lb.getId() + ". Libro: " + lb.getName() + ", Autor: " + lb.getAutor() + ", Páginas: " + lb.getPaginas());
+
+                }
+            }
+        }
+    }
+
+    public static void verLibros(){
+        try(MongoClient mongoClient = MongoClients.create("mongodb://localhost")) {
+            MongoDatabase sampleTrainingDB = mongoClient.getDatabase("proyecto");
+            MongoCollection<Document> booksCollection = sampleTrainingDB.getCollection("libro");
+
+            FindIterable<Document> iterable = booksCollection.find();
+            MongoCursor<Document> cursor = iterable.iterator();
+            Libro lbr = null;
+            while(cursor.hasNext()) {
                 Document actual = cursor.next();
                 lbr = new Libro();
                 lbr.setName(actual.getString("name"));
                 lbr.setAutor(actual.getString("autor"));
                 lbr.setPaginas(actual.getInteger("paginas"));
                 lbr.setId(actual.getInteger("id"));
-                System.out.println(lbr.getId() + ". Libro: " + lbr.getName() +", Autor: " + lbr.getAutor() +", Páginas: "+ lbr.getPaginas() );
+                System.out.println(lbr.getId() + ". Libro: " + lbr.getName() + ", Autor: " + lbr.getAutor() + ", Páginas: " + lbr.getPaginas());
             }
-            int n = ent.nextInt();
-
-            Bson filter = eq("name",name);
-            Bson updateLibros = set("libros",n);
-            UpdateResult updateResult = usuarioCollection.updateOne(filter,updateLibros);
-
-            System.out.println("Libro añadido");
-
         }
-    }
-    public static void quitarLibros(String name){
 
     }
 
